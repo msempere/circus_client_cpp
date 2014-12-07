@@ -4,27 +4,33 @@
 #include "zmq.hpp"
 #include "json11.hpp"
 #include <map>
+#include <vector>
 
 using namespace json11;
 
-class Client {
+typedef std::pair<int, std::string> Error;
 
-    public:
-        Client(zmq::context_t& context, const std::string &host, int port, int timeout);
-        ~Client();
-        void disconnect();
-        Json call(Json &msg);
-        void list(const std::string &watcher);
-        void list();
+namespace cccpp{
 
-    private:
-        zmq::context_t      &context_;
-        zmq::socket_t       *socket_;
-        std::string         host_;
-        int                 port_;
-        int                 timeout_;
-        std::string         m_cid;
-        Json parse_message(zmq::message_t &msg);
-};
+    class Client {
+
+        public:
+            Client(zmq::context_t& context, const std::string &host, int port, int timeout);
+            ~Client();
+            void disconnect();
+            Json call(Json &msg);
+            std::vector<std::string> list(const std::string &watcher, Error &error);
+            void list(Error &error);
+
+        private:
+            zmq::context_t      &context_;
+            zmq::socket_t       *socket_;
+            std::string         host_;
+            int                 port_;
+            int                 timeout_;
+            std::string         m_cid;
+            Json parse_message(zmq::message_t &msg);
+    };
+}
 
 #endif

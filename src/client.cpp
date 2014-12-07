@@ -1,10 +1,12 @@
 #include "client.hpp"
+#include <utility>
 #include <sstream>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 using namespace json11;
+using namespace cccpp;
 
 Client::Client(zmq::context_t& context, const std::string &host, int port, int timeout)
     :context_(context), host_(host), port_(port), timeout_(timeout*1000) {
@@ -30,7 +32,7 @@ Client::~Client(){
 
 void Client::disconnect(){};
 
-void Client::list(){
+void Client::list(Error &error){
     Json msg = Json::object {
         {"id", this->m_cid},
         {"command", "list"},
@@ -39,14 +41,24 @@ void Client::list(){
     std::cout << response.dump() << std::endl;
 }
 
-void Client::list(const std::string &watcher){
+std::vector<std::string> Client::list(const std::string &watcher, Error &error){
     Json msg = Json::object {
         {"id", this->m_cid},
         {"command", "list"},
         {"properties", Json::object {{"name", watcher}}},
     };
     Json response = call(msg);
-    std::cout << response.dump() << std::endl;
+    std::vector<std::string> procs;
+
+    if(response["status"].string_value() == "ok"){
+        for (auto k : response["watchers"].array_items()){
+            procs.push_back(k.string_value());
+        }
+    }
+    else{
+        error = std::make_pair(response["errno"].int_value(), response["reasons"].string_value());
+    }
+    return procs;
 }
 
 
