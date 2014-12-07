@@ -1,0 +1,10 @@
+CIRCUS COMMANDS:
+
+    - Get list of watchers or processes in a watcher:
+
+        Client circus_client = Client(context, host, port, timeout);
+        circus_client.list();
+        circus_client.list("<name>");
+
+        Command-line equivalent:
+            $ circusctl list [<name>]
