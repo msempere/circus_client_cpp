@@ -15,5 +15,11 @@ int main(){
     Error error;
 
     c.list(watcher, error);
+
+    if(!error.second.empty()){
+        std::cout << error.second << std::endl;
+    }
+
+
     c.list(error);
 }
