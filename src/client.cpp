@@ -49,6 +49,7 @@ std::vector<std::string> Client::list(const std::string &watcher, Error &error){
     };
     Json response = call(msg);
     std::vector<std::string> procs;
+    std::cout << response.dump() << std::endl;
 
     if(response["status"].string_value() == "ok"){
         for (auto k : response["watchers"].array_items()){
@@ -56,7 +57,7 @@ std::vector<std::string> Client::list(const std::string &watcher, Error &error){
         }
     }
     else{
-        error = std::make_pair(response["errno"].int_value(), response["reasons"].string_value());
+        error = std::make_pair(response["errno"].int_value(), response["reason"].string_value());
     }
     return procs;
 }
