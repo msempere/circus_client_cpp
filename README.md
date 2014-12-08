@@ -8,7 +8,6 @@ Circus commands:
  * get: Get the value of a watcher option (TODO)
  * globaloptions: Get the arbiter options (TODO)
  * incr: Increment the number of processes in a watcher (TODO)
- 
  * list: Get list of watchers or processes in a watcher
  
  Processes in a watcher:
@@ -26,8 +25,10 @@ Circus commands:
  ```
  
  Command-line equivalent:
-		$ circusctl list [<name>]
-        
+ ```bash
+ $ circusctl list [<name>]
+```
+
  * listen: Suscribe to a watcher event (TODO)
  * listsockets: Get the list of sockets (TODO)
  * numprocesses: Get the number of processes (TODO)
