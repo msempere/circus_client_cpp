@@ -62,4 +62,3 @@
  * get: Get the value of a watcher option (TODO)
  * globaloptions: Get the arbiter options (TODO)
  * incr: Increment the number of processes in a watcher (TODO)
-
