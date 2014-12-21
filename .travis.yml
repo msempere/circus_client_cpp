@@ -6,5 +6,6 @@ before_install:
  - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
  - sudo apt-get update -qq
  - sudo apt-get install cmake
+ - sudo apt-get install install zeromq-devel
 
 script: mkdir build && cd build && cmake ../ && make
