@@ -4,22 +4,14 @@
 using namespace cccpp;
 
 int main(){
-    std::string host = "127.0.0.1";
-    int timeout = 1;
-    int threads = 1;
+    zmq::context_t context(1);
+    Client c = Client(context, "127.0.0.1", 5555, 1);
 
-    zmq::context_t context(threads);
-    Client c = Client(context, host, 5555, timeout);
+    c.add("a_proc", "ls", {"-la"}, true);
 
-    std::string watcher = "watcher_name";
-    Error error;
+    std::cout<<c.status("a_proc")<<std::endl;
 
-    c.list(watcher, error);
-
-    if(!error.second.empty()){
-        std::cout << error.second << std::endl;
+    for (auto watcher: c.list()){
+        std::cout<< watcher <<std::endl;
     }
-
-
-    c.list(error);
 }

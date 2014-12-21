@@ -8,8 +8,6 @@
 
 using namespace json11;
 
-typedef std::pair<int, std::string> Error;
-
 namespace cccpp{
 
     class Client {
@@ -17,10 +15,18 @@ namespace cccpp{
         public:
             Client(zmq::context_t& context, const std::string &host, int port, int timeout);
             ~Client();
-            void disconnect();
-            Json call(Json &msg);
-            std::vector<std::string> list(const std::string &watcher, Error &error);
-            void list(Error &error);
+
+            // list processes in a watcher
+            std::vector<std::string> list(const std::string &watcher);
+
+            // list watchers
+            std::vector<std::string>  list();
+
+            // add a new watcher with a process
+            bool add(const std::string &name, const std::string &command, const std::vector<std::string> &args, bool autostart);
+
+            // get status from a watcher
+            std::string status(const std::string &watcher);
 
         private:
             zmq::context_t      &context_;
@@ -30,6 +36,8 @@ namespace cccpp{
             int                 timeout_;
             std::string         m_cid;
             Json parse_message(zmq::message_t &msg);
+            Json call(Json &msg);
+            void disconnect();
     };
 }
 

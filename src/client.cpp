@@ -1,4 +1,5 @@
 #include "client.hpp"
+#include "circus_exception.hpp"
 #include <utility>
 #include <sstream>
 #include <boost/uuid/uuid.hpp>
@@ -32,34 +33,99 @@ Client::~Client(){
 
 void Client::disconnect(){};
 
-void Client::list(Error &error){
+std::vector<std::string> Client::list(){
     Json msg = Json::object {
         {"id", this->m_cid},
         {"command", "list"},
     };
     Json response = call(msg);
-    std::cout << response.dump() << std::endl;
+    std::vector<std::string> watchers;
+
+    if(response["status"].string_value() == "ok"){
+        for (auto k : response["watchers"].array_items()){
+            watchers.push_back(k.string_value());
+        }
+    }
+    else{
+        throw CircusException(response["reason"].string_value(), response["errno"].int_value());
+    }
+    return watchers;
 }
 
-std::vector<std::string> Client::list(const std::string &watcher, Error &error){
+//TODO if watcher exists, add the proc
+//TODO proc as object?
+bool Client::add(const std::string &name, const std::string &command, const std::vector<std::string> &args, bool autostart){
+
+    std::string arguments = "";
+    for(auto arg: args)
+        arguments += arg + " ";
+
+    Json msg = Json::object {
+        {"id", this->m_cid},
+        {"command","add"},
+        {"properties",
+            Json::object {
+                {"cmd", command},
+                {"name", name},
+                {"numprocesses", std::to_string(1)},
+                {"start", autostart},
+                {"args", arguments},
+                {"options",
+                    Json::object {
+                    {"singleton", true},
+                    {"shell", true}
+                    },
+                },
+            },
+        },
+    };
+    Json response = call(msg);
+    if(response["status"].string_value() == "ok"){
+        return true;
+    }
+    else{
+        throw CircusException(response["reason"].string_value(), response["errno"].int_value());
+    }
+    return false;
+}
+
+
+std::string Client::status(const std::string &watcher){
+
+    Json msg = Json::object {
+        {"id", this->m_cid},
+        {"command", "status"},
+        {"properties", { Json::object {{"name", watcher}}}},
+    };
+    Json response = call(msg);
+
+    if(response["status"].string_value() != "error"){
+        return response["status"].string_value();
+    }
+    else {
+        return "not running";
+    }
+}
+
+//TODO change errors to exceptions
+std::vector<std::string> Client::list(const std::string &watcher){
     Json msg = Json::object {
         {"id", this->m_cid},
         {"command", "list"},
         {"properties", Json::object {{"name", watcher}}},
     };
     Json response = call(msg);
-    std::vector<std::string> procs;
-    std::cout << response.dump() << std::endl;
+    std::vector<std::string> watchers;
 
     if(response["status"].string_value() == "ok"){
         for (auto k : response["watchers"].array_items()){
-            procs.push_back(k.string_value());
+            watchers.push_back(k.string_value());
         }
     }
     else{
-        error = std::make_pair(response["errno"].int_value(), response["reason"].string_value());
+        throw CircusException(response["reason"].string_value(), response["errno"].int_value());
     }
-    return procs;
+    return watchers;
 }
 
 
