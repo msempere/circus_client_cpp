@@ -1,4 +1,4 @@
-# Circus_client_cpp
+# Circus_client_cpp [![Build Status](https://travis-ci.org/msempere/circus_client_cpp.svg?branch=master)] (http://travis-ci.org/msempere/circus_client_cpp)
 
 ## Circus commands:
 
