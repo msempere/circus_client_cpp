@@ -43,8 +43,6 @@
  $ circusctl list [<name>]
 ```
 
-
-
  * stop: Stop the arbiter or a watcher (TODO)
  * listen: Suscribe to a watcher event (TODO)
  * listsockets: Get the list of sockets (TODO)
